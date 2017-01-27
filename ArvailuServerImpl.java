@@ -25,6 +25,7 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 
 	public ArvailuServerImpl() throws RemoteException {
 		arvoNumero();
+		STATE = "WAIT";
 	}
 
 	public static void main(String[] args) {

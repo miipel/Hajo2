@@ -50,36 +50,35 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 
 	@Override
 	public void run() {
+		Scanner sc = new Scanner(System.in);
+		String numero;
 		try {
 			while (!server.getState().equals("END")) {
-				if (server.getState().equals("WAIT")) {
-					try {
-						Thread.sleep(300);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				} else if (server.getState().equals("GAME")) {
-					Scanner sc = new Scanner(System.in);
+				odota("GAME");
+				if (server.getState().equals("GAME")) {
+
 					int yritykset = 3;
 					while (yritykset > 0) {
 						if (vastasiOikein) {
 							server.tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
 							server.paivitaTilanne(pelaajaNimi, 1);
-							odota();
+							odota("END");
 							yritykset = 0;
 						}
 						System.out.println("Arvaa numero! >");
-						vastasiOikein = server.tarkista(Integer.parseInt(sc.nextLine()));
+						numero = sc.nextLine(); // Scanneri on blockaava IO eli t‰‰ t‰ytyy teh‰ toisessa s‰ikeess‰
+						vastasiOikein = server.tarkista(Integer.parseInt(numero));
 						yritykset--;
 						System.out.println("Yrityksi‰ j‰ljell‰: " + yritykset);
 					}
 					System.out.println("Yritykset loppuivat!");
 					server.paivitaTilanne(pelaajaNimi, 0);
-					odota();
+					odota("END");
+					sc.close();
 
 				}
-			System.out.println("Peli loppui!");
-			System.exit(0);
+				System.out.println("Peli loppui!");
+				System.exit(0);
 			} // while
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -98,8 +97,8 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 	}
 
 	@Override
-	public void odota() throws RemoteException {
-		while (!server.getState().equals("END")) {
+	public void odota(String STATE) throws RemoteException {
+		while (!server.getState().equals(STATE)) {
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException e) {

@@ -12,7 +12,7 @@ public interface ArvailuClient extends Remote {
 	
 	public void tiedota(String s) throws RemoteException;
 	
-	public void odota() throws RemoteException;
+	public void odota(String STATE) throws RemoteException;
 	
 
 } // interface Noppa

@@ -4,6 +4,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * 
+ * @author Miika Peltotalo & Peetu Seilonen
+ *
+ */
 public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuServer {
 	/**
 	 * 

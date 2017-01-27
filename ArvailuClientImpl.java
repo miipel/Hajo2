@@ -5,6 +5,11 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author Miika Peltotalo & Peetu Seilonen
+ *
+ */
 public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuClient, Runnable {
 	/**
 	 * 

@@ -17,6 +17,7 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 	private String STATE = "START";
 	private Random rnd = new Random();
 	private int vastaus;
+	private int pelaajaLaskuri;
 	private ArrayList<ArvailuClient> clients = new ArrayList<ArvailuClient>();
 	private String saannot = "Pelaajat arvaavat vuorotellen numeroa 0-9."
 			+ " Jos jompi kumpi arvaa numeron oikein, toisella pelaajalla"
@@ -45,16 +46,16 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 	@Override
 	public void lisaaClient(ArvailuClient client) throws RemoteException {
 		clients.add(client);
-		
+
 		tiedotaKaikille("Pelaaja " + client.getPelaajaNimi() + " liittyi.");
 		if (clients.size() == 2) {
 			setState("GAME");
 			tiedotaKaikille(saannot);
 			tiedotaKaikille("\n");
 			tiedotaKaikille("Peli alkaa!");
-			
+
 		}
-			
+
 	}
 
 	@Override
@@ -77,9 +78,12 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 				voittajat.add(arvailuClient.getPelaajaNimi());
 			}
 		}
-		if (voittajat.size() > 1) tiedotaKaikille("Ei voittajaa!");
-		else tiedotaKaikille(voittajat.get(0) + " voitti pelin!");
-		
+		if (voittajat.size() > 1)
+			tiedotaKaikille("Ei voittajaa!");
+		if (voittajat.size() == 1)
+			tiedotaKaikille(voittajat.get(0) + " voitti pelin!");
+		if (voittajat.isEmpty())
+			tiedotaKaikille("Ei voittajaa!");
 		setState("END");
 	}
 
@@ -92,18 +96,19 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 	public void tiedotaKaikille(String viesti) throws RemoteException {
 		for (ArvailuClient arvailuClient : clients) {
 			arvailuClient.tiedota(viesti);
-		}		
+		}
 	}
-	
-	
 
 	@Override
 	public void paivitaTilanne(String pelaajaNimi, int piste) throws RemoteException {
 		if (piste == 1) {
 			tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
+			pelaajaLaskuri++;
+			if (pelaajaLaskuri == 2) lopeta();
 		}
 		if (piste == 0) {
-			lopeta();
+			pelaajaLaskuri++;
+			if (pelaajaLaskuri == 2) lopeta();
 		}
 	}
 

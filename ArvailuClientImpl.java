@@ -73,21 +73,23 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 					vastasiOikein = server.tarkista(Integer.parseInt(numero));
 					if (vastasiOikein) {
 						server.tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
-						server.paivitaTilanne(pelaajaNimi, 1);
-						odota("END");
+						server.paivitaTilanne(pelaajaNimi, 1);						
 						yritykset = 0;
+						odota("END");
 					}
 					yritykset--;
 					System.out.println("Yrityksiä jäljellä: " + yritykset);
 
 				}
-				// System.out.println("Peli loppui!");
-				// System.exit(0);
+				
 			} // while
+			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("Peli loppui!");
+		System.exit(0);
 	}
 
 	@Override

@@ -74,7 +74,7 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 		ArrayList<String> voittajat = new ArrayList<String>();
 		for (ArvailuClient arvailuClient : clients) {
 			if (arvailuClient.getVastasikoOikein()) {
-				arvailuClient.getPelaajaNimi();
+				voittajat.add(arvailuClient.getPelaajaNimi());
 			}
 		}
 		if (voittajat.size() > 1) tiedotaKaikille("Ei voittajaa!");

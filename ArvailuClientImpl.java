@@ -27,7 +27,6 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 		pelaajaNimi = sc.nextLine();
 		ArvailuServer server = (ArvailuServer) Naming.lookup(osoite);
 		new ArvailuClientImpl(server, pelaajaNimi);
-		sc.close();
 	} // main
 
 	public ArvailuClientImpl(ArvailuServer server, String pelaajaNimi) throws RemoteException {
@@ -48,37 +47,42 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 
 	}
 
+	public String pyydaSyotetta(Scanner sc) {
+		
+		System.out.println("Arvaa numero! >");
+		String syote = sc.nextLine();
+		return syote;
+	}
+
 	@Override
 	public void run() {
 		Scanner sc = new Scanner(System.in);
 		String numero;
+		int yritykset = 3;
 		try {
 			while (!server.getState().equals("END")) {
 				odota("GAME");
 				if (server.getState().equals("GAME")) {
-
-					int yritykset = 3;
-					while (yritykset > 0) {
-						if (vastasiOikein) {
-							server.tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
-							server.paivitaTilanne(pelaajaNimi, 1);
-							odota("END");
-							yritykset = 0;
-						}
-						System.out.println("Arvaa numero! >");
-						numero = sc.nextLine(); // Scanneri on blockaava IO eli t‰‰ t‰ytyy teh‰ toisessa s‰ikeess‰
-						vastasiOikein = server.tarkista(Integer.parseInt(numero));
-						yritykset--;
-						System.out.println("Yrityksi‰ j‰ljell‰: " + yritykset);
+					if (yritykset == 0) {
+						System.out.println("Yritykset loppuivat!");
+						server.paivitaTilanne(pelaajaNimi, 0);
+						odota("END");
 					}
-					System.out.println("Yritykset loppuivat!");
-					server.paivitaTilanne(pelaajaNimi, 0);
-					odota("END");
-					sc.close();
+
+					numero = pyydaSyotetta(sc);
+					vastasiOikein = server.tarkista(Integer.parseInt(numero));
+					if (vastasiOikein) {
+						server.tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
+						server.paivitaTilanne(pelaajaNimi, 1);
+						odota("END");
+						yritykset = 0;
+					}
+					yritykset--;
+					System.out.println("Yrityksi‰ j‰ljell‰: " + yritykset);
 
 				}
-				System.out.println("Peli loppui!");
-				System.exit(0);
+				// System.out.println("Peli loppui!");
+				// System.exit(0);
 			} // while
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

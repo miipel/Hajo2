@@ -29,6 +29,15 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 		new ArvailuClientImpl(server, pelaajaNimi);
 	} // main
 
+	/**
+	 * Constructor
+	 * 
+	 * @param server
+	 *            : Serveri johon asiakas lis‰t‰‰n.
+	 * @param pelaajaNimi
+	 *            : Pelaajan nimi, tulee syˆtteen‰
+	 * @throws RemoteException
+	 */
 	public ArvailuClientImpl(ArvailuServer server, String pelaajaNimi) throws RemoteException {
 		this.server = server;
 		this.pelaajaNimi = pelaajaNimi;
@@ -36,24 +45,22 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 		new Thread(this).start();
 	}
 
-	@Override
-	public void yhdista() throws RemoteException {
-		// TODO
-	}
-
-	@Override
-	public void odotaNumeroa() throws RemoteException {
-		// TODO Auto-generated method stub
-
-	}
-
+	/**
+	 * Pyyt‰‰ syˆtett‰ asiakkaalta.
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	public String pyydaSyotetta(Scanner sc) {
-		
+
 		System.out.println("Arvaa numero! >");
 		String syote = sc.nextLine();
 		return syote;
 	}
 
+	/**
+	 * S‰ikeen ajo.
+	 */
 	@Override
 	public void run() {
 		Scanner sc = new Scanner(System.in);
@@ -73,7 +80,7 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 					vastasiOikein = server.tarkista(Integer.parseInt(numero));
 					if (vastasiOikein) {
 						server.tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
-						server.paivitaTilanne(pelaajaNimi, 1);						
+						server.paivitaTilanne(pelaajaNimi, 1);
 						yritykset = 0;
 						odota("END");
 					}
@@ -81,9 +88,9 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 					System.out.println("Yrityksi‰ j‰ljell‰: " + yritykset);
 
 				}
-				
+
 			} // while
-			
+
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,16 +99,26 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 		System.exit(0);
 	}
 
+	/**
+	 * Getteri
+	 */
 	@Override
 	public String getPelaajaNimi() throws RemoteException {
 		return pelaajaNimi;
 	}
 
+	/**
+	 * K‰ytet‰‰n yhdelle asiakkaalle tiedottamiseen.
+	 */
 	@Override
 	public void tiedota(String s) throws RemoteException {
 		System.out.println(s);
 	}
 
+	/**
+	 * Laittaa s‰ikeen nukkumaan, kunnes tila vaihtuu parametrina saatuun.
+	 * 
+	 */
 	@Override
 	public void odota(String STATE) throws RemoteException {
 		while (!server.getState().equals(STATE)) {
@@ -114,6 +131,9 @@ public class ArvailuClientImpl extends UnicastRemoteObject implements ArvailuCli
 
 	}
 
+	/**
+	 * Getteri
+	 */
 	@Override
 	public boolean getVastasikoOikein() throws RemoteException {
 		return vastasiOikein;

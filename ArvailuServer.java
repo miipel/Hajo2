@@ -13,9 +13,9 @@ public interface ArvailuServer extends Remote {
 	public void setState(String STATE) throws RemoteException;
 
 	public String getState() throws RemoteException;
-	
+
 	public void tiedotaKaikille(String viesti) throws RemoteException;
-	
+
 	public void paivitaTilanne(String pelaajaNimi, int piste) throws RemoteException;
 
 }

@@ -24,11 +24,6 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 			+ " on vielä mahdollisuus arvata oikein tasoittavalla vuorolla."
 			+ " Peli voi päättyä tasapeliin tai jomman kumman pelaajan voittoon.";
 
-	public ArvailuServerImpl() throws RemoteException {
-		arvoNumero();
-		STATE = "WAIT";
-	}
-
 	public static void main(String[] args) {
 		try {
 			Naming.rebind("ArvailuServerImpl", new ArvailuServerImpl());
@@ -37,12 +32,31 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 		}
 	} // main
 
+	/**
+	 * Constructor
+	 * 
+	 * @throws RemoteException
+	 */
+	public ArvailuServerImpl() throws RemoteException {
+		arvoNumero();
+		STATE = "WAIT";
+	}
+
+	
+	/**
+	 * Asettaa tilan pelille.
+	 * Mahdollisia tiloja: START, WAIT, GAME tai END
+	 */
 	@Override
 	public void setState(String STATE) throws RemoteException {
 		this.STATE = STATE;
 		tiedotaKaikille("Pelin tila: " + STATE);
 	}
 
+	/**
+	 * Lisää asiakkaan peliin. Samalla myös listaan josta löytyy
+	 * kaikki asiakkaat.
+	 */
 	@Override
 	public void lisaaClient(ArvailuClient client) throws RemoteException {
 		clients.add(client);
@@ -58,11 +72,18 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 
 	}
 
+	/**
+	 * Arpoo numeron 0-9
+	 */
 	@Override
 	public void arvoNumero() throws RemoteException {
 		vastaus = rnd.nextInt(10);
 	}
 
+	/**
+	 * Tarkistaa asiakkaan syöttämän vastauksen.
+	 * Vastaako palvelimen oikeaa vastausta vai ei.
+	 */
 	@Override
 	public boolean tarkista(int clientVastaus) throws RemoteException {
 		if (clientVastaus == vastaus)
@@ -70,6 +91,10 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 		return false;
 	}
 
+	/**
+	 * Lopettaa pelin ja tarkistaa kuka on voittanut.
+	 * Voittajia on joko yksi tai ei ollenkaan.
+	 */
 	@Override
 	public void lopeta() throws RemoteException {
 		ArrayList<String> voittajat = new ArrayList<String>();
@@ -87,11 +112,17 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 		setState("END");
 	}
 
+	/**
+	 * Getteri
+	 */
 	@Override
 	public String getState() throws RemoteException {
 		return STATE;
 	}
 
+	/**
+	 * Käytetään koko pelin välisten viestien lähettämiseen.
+	 */
 	@Override
 	public void tiedotaKaikille(String viesti) throws RemoteException {
 		for (ArvailuClient arvailuClient : clients) {
@@ -99,16 +130,22 @@ public class ArvailuServerImpl extends UnicastRemoteObject implements ArvailuSer
 		}
 	}
 
+	/**
+	 * Kutsutaan jos pelaaja on vastannut oikein tai arvaukset ovat
+	 * loppuneet. Kutsuu molemmissa tapauksissa lopeta() -metodia.
+	 */
 	@Override
 	public void paivitaTilanne(String pelaajaNimi, int piste) throws RemoteException {
 		if (piste == 1) {
 			tiedotaKaikille(pelaajaNimi + " vastasi oikein!");
 			pelaajaLaskuri++;
-			if (pelaajaLaskuri == 2) lopeta();
+			if (pelaajaLaskuri == 2)
+				lopeta();
 		}
 		if (piste == 0) {
 			pelaajaLaskuri++;
-			if (pelaajaLaskuri == 2) lopeta();
+			if (pelaajaLaskuri == 2)
+				lopeta();
 		}
 	}
 
